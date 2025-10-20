@@ -19,5 +19,10 @@ func lexDSL(l *lexer) stateFunc {
 		l.acceptLine()
 
 		l.ignore()
+
+		if l.acceptRun("\r\n") {
+			l.emit(typeEOL)
+			continue
+		}
 	}
 }

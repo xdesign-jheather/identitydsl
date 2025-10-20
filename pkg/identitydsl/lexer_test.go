@@ -16,12 +16,12 @@ func TestLexer(t *testing.T) {
 		got := l.items
 
 		if len(got) != len(want) {
-			t.Fatalf("got %d items, want %d", len(got), len(want))
+			t.Errorf("got %d items, want %d", len(got), len(want))
 		}
 
 		for i := range got {
 			if got[i].typ != want[i].typ || got[i].val != want[i].val {
-				t.Fatalf("at pos %d, got %v, want %v", i, got[i], want[i])
+				t.Errorf("at pos %d, got %v, want %v", i, got[i], want[i])
 				return
 			}
 		}
@@ -47,6 +47,89 @@ func TestLexer(t *testing.T) {
 				{
 					typ: typeComment,
 					val: "// A comment line starts with two slashes",
+				},
+				{
+					typ: typeEOF,
+				},
+			},
+		)
+
+		testLexer(
+			t,
+			"// A comment line starts with two slashes\n// Another comment!",
+			[]lexeme{
+				{
+					typ: typeComment,
+					val: "// A comment line starts with two slashes",
+				},
+				{
+					typ: typeEOL,
+					val: "\n",
+				},
+				{
+					typ: typeComment,
+					val: "// Another comment!",
+				},
+				{
+					typ: typeEOF,
+				},
+			},
+		)
+	})
+
+	t.Run("new lines", func(t *testing.T) {
+
+		testLexer(
+			t,
+			"\n",
+			[]lexeme{
+				{
+					typ: typeEOL,
+					val: "\n",
+				},
+				{
+					typ: typeEOF,
+				},
+			},
+		)
+
+		testLexer(
+			t,
+			"\r",
+			[]lexeme{
+				{
+					typ: typeEOL,
+					val: "\r",
+				},
+				{
+					typ: typeEOF,
+				},
+			},
+		)
+
+		testLexer(
+			t,
+			"\r\n",
+			[]lexeme{
+				{
+					typ: typeEOL,
+					val: "\r\n",
+				},
+				{
+					typ: typeEOF,
+				},
+			},
+		)
+
+		// Multiple newlines should be one lexeme
+
+		testLexer(
+			t,
+			"\n\n",
+			[]lexeme{
+				{
+					typ: typeEOL,
+					val: "\n\n",
 				},
 				{
 					typ: typeEOF,

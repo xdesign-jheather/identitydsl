@@ -51,6 +51,29 @@ func (l *lexer) peekString(test string) bool {
 	return strings.HasPrefix(l.input[l.pos:], test)
 }
 
+func (l *lexer) accept(runes string) bool {
+	if strings.IndexRune(runes, l.next()) >= 0 {
+		return true
+	}
+	l.backup()
+	return false
+}
+
+func (l *lexer) acceptRun(runes string) bool {
+	was := l.pos
+	for {
+		r := l.next()
+		if r == eof {
+			break
+		}
+		if strings.IndexRune(runes, r) < 0 {
+			l.backup()
+			break
+		}
+	}
+	return l.pos > was
+}
+
 func (l *lexer) acceptLine() {
 	for {
 		r := l.next()
