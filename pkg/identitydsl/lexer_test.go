@@ -154,7 +154,7 @@ func TestLexer(t *testing.T) {
 			[]lexeme{
 				{
 					typ: typeError,
-					val: "Unknown input 'Hello' at line 1",
+					val: "Unknown input 'Hello' on line 1",
 				},
 			},
 		)
@@ -169,7 +169,7 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: typeError,
-					val: "Unknown input 'Cheese' at line 2",
+					val: "Unknown input 'Cheese' on line 2",
 				},
 			},
 		)
@@ -182,7 +182,7 @@ func TestLexer(t *testing.T) {
 			[]lexeme{
 				{
 					typ: typeError,
-					val: "Unknown input 'Account' at line 1",
+					val: "Unknown input 'Account' on line 1",
 				},
 			},
 		)
