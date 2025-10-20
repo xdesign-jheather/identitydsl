@@ -7,6 +7,9 @@ const (
 	typeComment
 	typeEOL
 	typeError
+	typeAccount
+	typeIdentifier
+	typeSpace
 )
 
 type lexeme struct {

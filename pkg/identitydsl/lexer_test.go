@@ -1,6 +1,9 @@
 package identitydsl
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestLexer(t *testing.T) {
 	// We intend to test that the lexer produces the correct token stream for
@@ -17,6 +20,11 @@ func TestLexer(t *testing.T) {
 
 		if len(got) != len(want) {
 			t.Errorf("got %d items, want %d", len(got), len(want))
+
+			for i := range l.items {
+				fmt.Printf("%d: %v\n", i, l.items[i])
+			}
+
 			return
 		}
 
@@ -162,6 +170,76 @@ func TestLexer(t *testing.T) {
 				{
 					typ: typeError,
 					val: "Unknown input 'Cheese' at line 2",
+				},
+			},
+		)
+	})
+
+	t.Run("account entity", func(t *testing.T) {
+		testLexer(
+			t,
+			"Account",
+			[]lexeme{
+				{
+					typ: typeError,
+					val: "Unknown input 'Account' at line 1",
+				},
+			},
+		)
+
+		testLexer(
+			t,
+			"Account 112233445566",
+			[]lexeme{
+				{
+					typ: typeAccount,
+				},
+				{
+					typ: typeSpace,
+					val: " ",
+				},
+				{
+					typ: typeIdentifier,
+					val: "112233445566",
+				},
+				{
+					typ: typeEOF,
+				},
+			},
+		)
+
+		testLexer(
+			t,
+			"Account 1122334455",
+			[]lexeme{
+				{
+					typ: typeAccount,
+				},
+				{
+					typ: typeSpace,
+					val: " ",
+				},
+				{
+					typ: typeError,
+					val: "Bad length account ID on line 1",
+				},
+			},
+		)
+
+		testLexer(
+			t,
+			"Account ABC1122334455",
+			[]lexeme{
+				{
+					typ: typeAccount,
+				},
+				{
+					typ: typeSpace,
+					val: " ",
+				},
+				{
+					typ: typeError,
+					val: "Invalid account ID on line 1",
 				},
 			},
 		)
