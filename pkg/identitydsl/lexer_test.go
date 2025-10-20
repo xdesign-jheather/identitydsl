@@ -17,6 +17,7 @@ func TestLexer(t *testing.T) {
 
 		if len(got) != len(want) {
 			t.Errorf("got %d items, want %d", len(got), len(want))
+			return
 		}
 
 		for i := range got {
@@ -133,6 +134,34 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: typeEOF,
+				},
+			},
+		)
+	})
+
+	t.Run("unknown input", func(t *testing.T) {
+		testLexer(
+			t,
+			"Hello",
+			[]lexeme{
+				{
+					typ: typeError,
+					val: "Unknown input 'Hello' at line 1",
+				},
+			},
+		)
+
+		testLexer(
+			t,
+			"\nCheese",
+			[]lexeme{
+				{
+					typ: typeEOL,
+					val: "\n",
+				},
+				{
+					typ: typeError,
+					val: "Unknown input 'Cheese' at line 2",
 				},
 			},
 		)

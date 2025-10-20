@@ -1,6 +1,7 @@
 package identitydsl
 
 import (
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
@@ -9,7 +10,7 @@ const eof = rune(-1)
 
 type lexer struct {
 	input string
-	items []lexeme
+	items lexemes
 	start int
 	pos   int
 	width int
@@ -99,4 +100,12 @@ func (l *lexer) emit(typ lexemeType) {
 		val: l.value(),
 	})
 	l.start = l.pos
+}
+
+func (l *lexer) errorf(format string, args ...interface{}) stateFunc {
+	l.items = append(l.items, lexeme{
+		typeError,
+		fmt.Sprintf(format, args...),
+	})
+	return nil
 }

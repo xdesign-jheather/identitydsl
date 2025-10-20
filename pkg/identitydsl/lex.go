@@ -10,6 +10,11 @@ func lexDSL(l *lexer) stateFunc {
 			return nil
 		}
 
+		if l.acceptRun("\r\n") {
+			l.emit(typeEOL)
+			continue
+		}
+
 		if l.peekString("//") {
 			l.acceptLine()
 			l.emit(typeComment)
@@ -18,11 +23,6 @@ func lexDSL(l *lexer) stateFunc {
 
 		l.acceptLine()
 
-		l.ignore()
-
-		if l.acceptRun("\r\n") {
-			l.emit(typeEOL)
-			continue
-		}
+		return l.errorf("Unknown input '%s' at line %d", l.value(), l.items.currentLineNumber())
 	}
 }
