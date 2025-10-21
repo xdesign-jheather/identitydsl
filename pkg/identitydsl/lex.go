@@ -1,5 +1,7 @@
 package identitydsl
 
+const valueRunes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.@£$"
+
 type stateFunc func(*lexer) stateFunc
 
 func lexDSL(l *lexer) stateFunc {
@@ -58,8 +60,70 @@ func lexAccount(l *lexer) stateFunc {
 			continue
 		}
 
-		if r := l.peek(); r == eof || r == '\r' || r == '\n' {
+		if l.peek() == eof {
 			return lexDSL
+		}
+
+		if r := l.peek(); r == '\r' || r == '\n' {
+			l.acceptRun("\r\n")
+			l.emit(typeEOL)
+			break
+		}
+	}
+
+	return lexTagsOrLabels
+}
+
+func lexTagsOrLabels(l *lexer) stateFunc {
+	for {
+		// Tags and labels are always indented
+
+		if !l.acceptString("  ") {
+			return lexDSL
+		}
+
+		l.emit(typeSpace)
+
+		for pos := 1; pos <= 2; pos++ {
+			quoted := l.peek() == '"'
+
+			if quoted {
+				l.next()
+				l.ignore()
+
+				if l.acceptRun(valueRunes + " ") {
+					l.emit(typeValue)
+				}
+
+				if r := l.next(); r != '"' {
+					return l.errorf("Unclosed quoted value on line %d", l.items.currentLineNumber())
+				}
+
+				l.ignore()
+			}
+
+			if !quoted {
+				if l.acceptRun(valueRunes) {
+					l.emit(typeValue)
+				}
+			}
+
+			if l.peek() != ' ' {
+				break
+			}
+
+			l.acceptRun(" ")
+
+			l.ignore()
+		}
+
+		if l.peek() == eof {
+			return lexDSL
+		}
+
+		if r := l.next(); r == '\r' || r == '\n' {
+			l.acceptRun("\r\n")
+			l.emit(typeEOL)
 		}
 	}
 }

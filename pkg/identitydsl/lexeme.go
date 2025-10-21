@@ -11,6 +11,7 @@ const (
 	typeIdentifier
 	typeSpace
 	typeDelimiter
+	typeValue
 )
 
 type lexeme struct {

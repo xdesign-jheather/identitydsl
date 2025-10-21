@@ -184,6 +184,7 @@ func TestLex(t *testing.T) {
 	})
 
 	t.Run("account entity", func(t *testing.T) {
+
 		lex(
 			t,
 			"no identifier",
@@ -325,6 +326,293 @@ func TestLex(t *testing.T) {
 				{
 					typ: typeError,
 					val: "Invalid account ID on line 1 position 2",
+				},
+			},
+		)
+
+		lex(
+			t,
+			"basic label",
+			`Account 112233112233
+  Label1`,
+			[]lexeme{
+				{
+					typ: typeAccount,
+				},
+				{
+					typ: typeSpace,
+					val: " ",
+				},
+				{
+					typ: typeIdentifier,
+					val: "112233112233",
+				},
+				{
+					typ: typeEOL,
+					val: "\n",
+				},
+				{
+					typ: typeSpace,
+					val: "  ",
+				},
+				{
+					typ: typeValue,
+					val: "Label1",
+				},
+				{
+					typ: typeEOF,
+				},
+			},
+		)
+
+		lex(
+			t,
+			"quoted label",
+			`Account 112233112233
+  "Developer Access"`,
+			[]lexeme{
+				{
+					typ: typeAccount,
+				},
+				{
+					typ: typeSpace,
+					val: " ",
+				},
+				{
+					typ: typeIdentifier,
+					val: "112233112233",
+				},
+				{
+					typ: typeEOL,
+					val: "\n",
+				},
+				{
+					typ: typeSpace,
+					val: "  ",
+				},
+				{
+					typ: typeValue,
+					val: "Developer Access",
+				},
+				{
+					typ: typeEOF,
+				},
+			},
+		)
+
+		lex(
+			t,
+			"key value pair",
+			`Account 112233112233
+  Key1 Value1`,
+			[]lexeme{
+				{
+					typ: typeAccount,
+				},
+				{
+					typ: typeSpace,
+					val: " ",
+				},
+				{
+					typ: typeIdentifier,
+					val: "112233112233",
+				},
+				{
+					typ: typeEOL,
+					val: "\n",
+				},
+				{
+					typ: typeSpace,
+					val: "  ",
+				},
+				{
+					typ: typeValue,
+					val: "Key1",
+				},
+				{
+					typ: typeValue,
+					val: "Value1",
+				},
+				{
+					typ: typeEOF,
+				},
+			},
+		)
+
+		lex(
+			t,
+			"key value pair quoted key",
+			`Account 112233112233
+  "Hello World" Value1`,
+			[]lexeme{
+				{
+					typ: typeAccount,
+				},
+				{
+					typ: typeSpace,
+					val: " ",
+				},
+				{
+					typ: typeIdentifier,
+					val: "112233112233",
+				},
+				{
+					typ: typeEOL,
+					val: "\n",
+				},
+				{
+					typ: typeSpace,
+					val: "  ",
+				},
+				{
+					typ: typeValue,
+					val: "Hello World",
+				},
+				{
+					typ: typeValue,
+					val: "Value1",
+				},
+				{
+					typ: typeEOF,
+				},
+			},
+		)
+
+		lex(
+			t,
+			"key value pair quoted value",
+			`Account 112233112233
+  Name "Hello World"`,
+			[]lexeme{
+				{
+					typ: typeAccount,
+				},
+				{
+					typ: typeSpace,
+					val: " ",
+				},
+				{
+					typ: typeIdentifier,
+					val: "112233112233",
+				},
+				{
+					typ: typeEOL,
+					val: "\n",
+				},
+				{
+					typ: typeSpace,
+					val: "  ",
+				},
+				{
+					typ: typeValue,
+					val: "Name",
+				},
+				{
+					typ: typeValue,
+					val: "Hello World",
+				},
+				{
+					typ: typeEOF,
+				},
+			},
+		)
+
+		lex(
+			t,
+			"key value pair quoted both",
+			`Account 112233112233
+  "What a World" "Hello World"`,
+			[]lexeme{
+				{
+					typ: typeAccount,
+				},
+				{
+					typ: typeSpace,
+					val: " ",
+				},
+				{
+					typ: typeIdentifier,
+					val: "112233112233",
+				},
+				{
+					typ: typeEOL,
+					val: "\n",
+				},
+				{
+					typ: typeSpace,
+					val: "  ",
+				},
+				{
+					typ: typeValue,
+					val: "What a World",
+				},
+				{
+					typ: typeValue,
+					val: "Hello World",
+				},
+				{
+					typ: typeEOF,
+				},
+			},
+		)
+
+		lex(
+			t,
+			"multiple labels",
+			`Account 112233112233
+  Label1
+  Label2
+  "Label 3"`,
+			[]lexeme{
+				{
+					typ: typeAccount,
+				},
+				{
+					typ: typeSpace,
+					val: " ",
+				},
+				{
+					typ: typeIdentifier,
+					val: "112233112233",
+				},
+				{
+					typ: typeEOL,
+					val: "\n",
+				},
+				{
+					typ: typeSpace,
+					val: "  ",
+				},
+				{
+					typ: typeValue,
+					val: "Label1",
+				},
+				{
+					typ: typeEOL,
+					val: "\n",
+				},
+				{
+					typ: typeSpace,
+					val: "  ",
+				},
+				{
+					typ: typeValue,
+					val: "Label2",
+				},
+				{
+					typ: typeEOL,
+					val: "\n",
+				},
+				{
+					typ: typeSpace,
+					val: "  ",
+				},
+				{
+					typ: typeValue,
+					val: "Label 3",
+				},
+				{
+					typ: typeEOF,
 				},
 			},
 		)
