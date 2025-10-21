@@ -10,7 +10,6 @@ const (
 	typeAccount
 	typeIdentifier
 	typeSpace
-	typeDelimiter
 	typeValue
 )
 

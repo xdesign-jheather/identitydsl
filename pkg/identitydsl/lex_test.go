@@ -161,7 +161,6 @@ func TestLex(t *testing.T) {
 			"Account 112233445566",
 			[]lexeme{
 				{typ: typeAccount},
-				{typeSpace, " "},
 				{typeIdentifier, "112233445566"},
 				{typ: typeEOF},
 			},
@@ -173,7 +172,6 @@ func TestLex(t *testing.T) {
 			"Account 1234567890",
 			[]lexeme{
 				{typ: typeAccount},
-				{typeSpace, " "},
 				{typeError, "Bad length account ID on line 1 position 1"},
 			},
 		)
@@ -184,7 +182,6 @@ func TestLex(t *testing.T) {
 			"Account Word",
 			[]lexeme{
 				{typ: typeAccount},
-				{typeSpace, " "},
 				{typeError, "Invalid account ID on line 1 position 1"},
 			},
 		)
@@ -195,13 +192,9 @@ func TestLex(t *testing.T) {
 			"Account 000000000000, 111111111111,  222222222222 , 333333333333",
 			[]lexeme{
 				{typ: typeAccount},
-				{typeSpace, " "},
 				{typeIdentifier, "000000000000"},
-				{typeDelimiter, ", "},
 				{typeIdentifier, "111111111111"},
-				{typeDelimiter, ",  "},
 				{typeIdentifier, "222222222222"},
-				{typeDelimiter, " , "},
 				{typeIdentifier, "333333333333"},
 				{typ: typeEOF},
 			},
@@ -213,9 +206,7 @@ func TestLex(t *testing.T) {
 			"Account 000000000000, Bob,  222222222222 , 333333333333",
 			[]lexeme{
 				{typ: typeAccount},
-				{typeSpace, " "},
 				{typeIdentifier, "000000000000"},
-				{typeDelimiter, ", "},
 				{typeError, "Invalid account ID on line 1 position 2"},
 			},
 		)
@@ -227,7 +218,6 @@ func TestLex(t *testing.T) {
   Label1`,
 			[]lexeme{
 				{typ: typeAccount},
-				{typeSpace, " "},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
 				{typeSpace, "  "},
@@ -243,7 +233,6 @@ func TestLex(t *testing.T) {
   "Developer Access"`,
 			[]lexeme{
 				{typ: typeAccount},
-				{typeSpace, " "},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
 				{typeSpace, "  "},
@@ -259,7 +248,6 @@ func TestLex(t *testing.T) {
   Key1 Value1`,
 			[]lexeme{
 				{typ: typeAccount},
-				{typeSpace, " "},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
 				{typeSpace, "  "},
@@ -276,7 +264,6 @@ func TestLex(t *testing.T) {
   "Hello World" Value1`,
 			[]lexeme{
 				{typ: typeAccount},
-				{typeSpace, " "},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
 				{typeSpace, "  "},
@@ -293,7 +280,6 @@ func TestLex(t *testing.T) {
   Name "Hello World"`,
 			[]lexeme{
 				{typ: typeAccount},
-				{typeSpace, " "},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
 				{typeSpace, "  "},
@@ -310,7 +296,6 @@ func TestLex(t *testing.T) {
   "What a World" "Hello World"`,
 			[]lexeme{
 				{typ: typeAccount},
-				{typeSpace, " "},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
 				{typeSpace, "  "},
@@ -329,7 +314,6 @@ func TestLex(t *testing.T) {
   "Label 3"`,
 			[]lexeme{
 				{typ: typeAccount},
-				{typeSpace, " "},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
 				{typeSpace, "  "},
@@ -353,7 +337,6 @@ func TestLex(t *testing.T) {
   "Favorite Pudding" "Rhubarb Crumble"`,
 			[]lexeme{
 				{typ: typeAccount},
-				{typeSpace, " "},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
 				{typeSpace, "  "},
@@ -382,7 +365,6 @@ func TestLex(t *testing.T) {
   Product Radio`,
 			[]lexeme{
 				{typ: typeAccount},
-				{typeSpace, " "},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
 				{typeSpace, "  "},

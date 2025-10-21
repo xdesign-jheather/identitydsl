@@ -42,7 +42,7 @@ func lexAccount(l *lexer) stateFunc {
 	l.ignore()
 	l.emit(typeAccount)
 	l.acceptRun(" ")
-	l.emit(typeSpace)
+	l.ignore()
 
 	for pos := 1; ; pos++ {
 		if !l.acceptRun("1234567890") {
@@ -56,7 +56,7 @@ func lexAccount(l *lexer) stateFunc {
 		l.emit(typeIdentifier)
 
 		if l.acceptRun(", ") {
-			l.emit(typeDelimiter)
+			l.ignore()
 			continue
 		}
 
