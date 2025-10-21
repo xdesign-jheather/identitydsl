@@ -10,6 +10,7 @@ const (
 	typeAccount
 	typeIdentifier
 	typeSpace
+	typeDelimiter
 )
 
 type lexeme struct {

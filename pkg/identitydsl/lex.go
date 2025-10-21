@@ -42,15 +42,24 @@ func lexAccount(l *lexer) stateFunc {
 	l.acceptRun(" ")
 	l.emit(typeSpace)
 
-	if !l.acceptRun("1234567890") {
-		return l.errorf("Invalid account ID on line %d", l.items.currentLineNumber())
+	for pos := 1; ; pos++ {
+		if !l.acceptRun("1234567890") {
+			return l.errorf("Invalid account ID on line %d position %d", l.items.currentLineNumber(), pos)
+		}
+
+		if l.width != 12 {
+			return l.errorf("Bad length account ID on line %d position %d", l.items.currentLineNumber(), pos)
+		}
+
+		l.emit(typeIdentifier)
+
+		if l.acceptRun(", ") {
+			l.emit(typeDelimiter)
+			continue
+		}
+
+		if r := l.peek(); r == eof || r == '\r' || r == '\n' {
+			return lexDSL
+		}
 	}
-
-	if l.width != 12 {
-		return l.errorf("Bad length account ID on line %d", l.items.currentLineNumber())
-	}
-
-	l.emit(typeIdentifier)
-
-	return lexDSL
 }

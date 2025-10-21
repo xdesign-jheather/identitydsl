@@ -232,7 +232,7 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: typeError,
-					val: "Bad length account ID on line 1",
+					val: "Bad length account ID on line 1 position 1",
 				},
 			},
 		)
@@ -251,7 +251,80 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: typeError,
-					val: "Invalid account ID on line 1",
+					val: "Invalid account ID on line 1 position 1",
+				},
+			},
+		)
+
+		testLexer(
+			t,
+			"multiple valid",
+			"Account 000000000000, 111111111111,  222222222222 , 333333333333",
+			[]lexeme{
+				{
+					typ: typeAccount,
+				},
+				{
+					typ: typeSpace,
+					val: " ",
+				},
+				{
+					typ: typeIdentifier,
+					val: "000000000000",
+				},
+				{
+					typ: typeDelimiter,
+					val: ", ",
+				},
+				{
+					typ: typeIdentifier,
+					val: "111111111111",
+				},
+				{
+					typ: typeDelimiter,
+					val: ",  ",
+				},
+				{
+					typ: typeIdentifier,
+					val: "222222222222",
+				},
+				{
+					typ: typeDelimiter,
+					val: " , ",
+				},
+				{
+					typ: typeIdentifier,
+					val: "333333333333",
+				},
+				{
+					typ: typeEOF,
+				},
+			},
+		)
+
+		testLexer(
+			t,
+			"valid then invalid",
+			"Account 000000000000, Bob,  222222222222 , 333333333333",
+			[]lexeme{
+				{
+					typ: typeAccount,
+				},
+				{
+					typ: typeSpace,
+					val: " ",
+				},
+				{
+					typ: typeIdentifier,
+					val: "000000000000",
+				},
+				{
+					typ: typeDelimiter,
+					val: ", ",
+				},
+				{
+					typ: typeError,
+					val: "Invalid account ID on line 1 position 2",
 				},
 			},
 		)
