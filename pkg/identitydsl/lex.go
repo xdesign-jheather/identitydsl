@@ -75,55 +75,55 @@ func lexAccount(l *lexer) stateFunc {
 }
 
 func lexTagsOrLabels(l *lexer) stateFunc {
-	for {
-		// Tags and labels are always indented
+	// Tags and labels are always indented
 
-		if !l.acceptString("  ") {
-			return lexDSL
-		}
+	if !l.acceptString("  ") {
+		return lexDSL
+	}
 
-		l.emit(typeSpace)
+	l.emit(typeSpace)
 
-		for pos := 1; pos <= 2; pos++ {
-			quoted := l.peek() == '"'
+	for pos := 1; pos <= 2; pos++ {
+		quoted := l.peek() == '"'
 
-			if quoted {
-				l.next()
-				l.ignore()
+		if quoted {
+			l.next()
+			l.ignore()
 
-				if l.acceptRun(valueRunes + " ") {
-					l.emit(typeValue)
-				}
-
-				if r := l.next(); r != '"' {
-					return l.errorf("Unclosed quoted value on line %d", l.items.currentLineNumber())
-				}
-
-				l.ignore()
+			if l.acceptRun(valueRunes + " ") {
+				l.emit(typeValue)
 			}
 
-			if !quoted {
-				if l.acceptRun(valueRunes) {
-					l.emit(typeValue)
-				}
+			if r := l.next(); r != '"' {
+				return l.errorf("Unclosed quoted value on line %d", l.items.currentLineNumber())
 			}
-
-			if l.peek() != ' ' {
-				break
-			}
-
-			l.acceptRun(" ")
 
 			l.ignore()
 		}
 
-		if l.peek() == eof {
-			return lexDSL
+		if !quoted {
+			if l.acceptRun(valueRunes) {
+				l.emit(typeValue)
+			}
 		}
 
-		if r := l.next(); r == '\r' || r == '\n' {
-			l.acceptRun("\r\n")
-			l.emit(typeEOL)
+		if l.peek() != ' ' {
+			break
 		}
+
+		l.acceptRun(" ")
+
+		l.ignore()
 	}
+
+	if l.peek() == eof {
+		return lexDSL
+	}
+
+	if r := l.next(); r == '\r' || r == '\n' {
+		l.acceptRun("\r\n")
+		l.emit(typeEOL)
+	}
+
+	return lexTagsOrLabels
 }

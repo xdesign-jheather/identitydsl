@@ -55,13 +55,8 @@ func TestLex(t *testing.T) {
 			"single",
 			"// A comment line starts with two slashes",
 			[]lexeme{
-				{
-					typ: typeComment,
-					val: "// A comment line starts with two slashes",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typeComment, "// A comment line starts with two slashes"},
+				{typ: typeEOF},
 			},
 		)
 
@@ -70,21 +65,10 @@ func TestLex(t *testing.T) {
 			"multiple",
 			"// A comment line starts with two slashes\n// Another comment!",
 			[]lexeme{
-				{
-					typ: typeComment,
-					val: "// A comment line starts with two slashes",
-				},
-				{
-					typ: typeEOL,
-					val: "\n",
-				},
-				{
-					typ: typeComment,
-					val: "// Another comment!",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typeComment, "// A comment line starts with two slashes"},
+				{typeEOL, "\n"},
+				{typeComment, "// Another comment!"},
+				{typ: typeEOF},
 			},
 		)
 	})
@@ -95,13 +79,8 @@ func TestLex(t *testing.T) {
 			"n",
 			"\n",
 			[]lexeme{
-				{
-					typ: typeEOL,
-					val: "\n",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typeEOL, "\n"},
+				{typ: typeEOF},
 			},
 		)
 
@@ -110,13 +89,8 @@ func TestLex(t *testing.T) {
 			"r",
 			"\r",
 			[]lexeme{
-				{
-					typ: typeEOL,
-					val: "\r",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typeEOL, "\r"},
+				{typ: typeEOF},
 			},
 		)
 
@@ -125,13 +99,8 @@ func TestLex(t *testing.T) {
 			"rn",
 			"\r\n",
 			[]lexeme{
-				{
-					typ: typeEOL,
-					val: "\r\n",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typeEOL, "\r\n"},
+				{typ: typeEOF},
 			},
 		)
 
@@ -142,13 +111,8 @@ func TestLex(t *testing.T) {
 			"nn",
 			"\n\n",
 			[]lexeme{
-				{
-					typ: typeEOL,
-					val: "\n\n",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typeEOL, "\n\n"},
+				{typ: typeEOF},
 			},
 		)
 	})
@@ -159,10 +123,7 @@ func TestLex(t *testing.T) {
 			"line 1",
 			"Hello",
 			[]lexeme{
-				{
-					typ: typeError,
-					val: "Unknown input 'Hello' on line 1",
-				},
+				{typeError, "Unknown input 'Hello' on line 1"},
 			},
 		)
 
@@ -171,14 +132,8 @@ func TestLex(t *testing.T) {
 			"line 2",
 			"\nCheese",
 			[]lexeme{
-				{
-					typ: typeEOL,
-					val: "\n",
-				},
-				{
-					typ: typeError,
-					val: "Unknown input 'Cheese' on line 2",
-				},
+				{typeEOL, "\n"},
+				{typeError, "Unknown input 'Cheese' on line 2"},
 			},
 		)
 	})
@@ -190,10 +145,7 @@ func TestLex(t *testing.T) {
 			"no identifier",
 			"Account",
 			[]lexeme{
-				{
-					typ: typeError,
-					val: "Unknown input 'Account' on line 1",
-				},
+				{typeError, "Unknown input 'Account' on line 1"},
 			},
 		)
 
@@ -202,20 +154,10 @@ func TestLex(t *testing.T) {
 			"valid",
 			"Account 112233445566",
 			[]lexeme{
-				{
-					typ: typeAccount,
-				},
-				{
-					typ: typeSpace,
-					val: " ",
-				},
-				{
-					typ: typeIdentifier,
-					val: "112233445566",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typ: typeAccount},
+				{typeSpace, " "},
+				{typeIdentifier, "112233445566"},
+				{typ: typeEOF},
 			},
 		)
 
@@ -224,17 +166,9 @@ func TestLex(t *testing.T) {
 			"short",
 			"Account 1234567890",
 			[]lexeme{
-				{
-					typ: typeAccount,
-				},
-				{
-					typ: typeSpace,
-					val: " ",
-				},
-				{
-					typ: typeError,
-					val: "Bad length account ID on line 1 position 1",
-				},
+				{typ: typeAccount},
+				{typeSpace, " "},
+				{typeError, "Bad length account ID on line 1 position 1"},
 			},
 		)
 
@@ -243,17 +177,9 @@ func TestLex(t *testing.T) {
 			"invalid",
 			"Account Word",
 			[]lexeme{
-				{
-					typ: typeAccount,
-				},
-				{
-					typ: typeSpace,
-					val: " ",
-				},
-				{
-					typ: typeError,
-					val: "Invalid account ID on line 1 position 1",
-				},
+				{typ: typeAccount},
+				{typeSpace, " "},
+				{typeError, "Invalid account ID on line 1 position 1"},
 			},
 		)
 
@@ -262,44 +188,16 @@ func TestLex(t *testing.T) {
 			"multiple valid",
 			"Account 000000000000, 111111111111,  222222222222 , 333333333333",
 			[]lexeme{
-				{
-					typ: typeAccount,
-				},
-				{
-					typ: typeSpace,
-					val: " ",
-				},
-				{
-					typ: typeIdentifier,
-					val: "000000000000",
-				},
-				{
-					typ: typeDelimiter,
-					val: ", ",
-				},
-				{
-					typ: typeIdentifier,
-					val: "111111111111",
-				},
-				{
-					typ: typeDelimiter,
-					val: ",  ",
-				},
-				{
-					typ: typeIdentifier,
-					val: "222222222222",
-				},
-				{
-					typ: typeDelimiter,
-					val: " , ",
-				},
-				{
-					typ: typeIdentifier,
-					val: "333333333333",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typ: typeAccount},
+				{typeSpace, " "},
+				{typeIdentifier, "000000000000"},
+				{typeDelimiter, ", "},
+				{typeIdentifier, "111111111111"},
+				{typeDelimiter, ",  "},
+				{typeIdentifier, "222222222222"},
+				{typeDelimiter, " , "},
+				{typeIdentifier, "333333333333"},
+				{typ: typeEOF},
 			},
 		)
 
@@ -308,25 +206,11 @@ func TestLex(t *testing.T) {
 			"valid then invalid",
 			"Account 000000000000, Bob,  222222222222 , 333333333333",
 			[]lexeme{
-				{
-					typ: typeAccount,
-				},
-				{
-					typ: typeSpace,
-					val: " ",
-				},
-				{
-					typ: typeIdentifier,
-					val: "000000000000",
-				},
-				{
-					typ: typeDelimiter,
-					val: ", ",
-				},
-				{
-					typ: typeError,
-					val: "Invalid account ID on line 1 position 2",
-				},
+				{typ: typeAccount},
+				{typeSpace, " "},
+				{typeIdentifier, "000000000000"},
+				{typeDelimiter, ", "},
+				{typeError, "Invalid account ID on line 1 position 2"},
 			},
 		)
 
@@ -336,32 +220,13 @@ func TestLex(t *testing.T) {
 			`Account 112233112233
   Label1`,
 			[]lexeme{
-				{
-					typ: typeAccount,
-				},
-				{
-					typ: typeSpace,
-					val: " ",
-				},
-				{
-					typ: typeIdentifier,
-					val: "112233112233",
-				},
-				{
-					typ: typeEOL,
-					val: "\n",
-				},
-				{
-					typ: typeSpace,
-					val: "  ",
-				},
-				{
-					typ: typeValue,
-					val: "Label1",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typ: typeAccount},
+				{typeSpace, " "},
+				{typeIdentifier, "112233112233"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "Label1"},
+				{typ: typeEOF},
 			},
 		)
 
@@ -371,32 +236,13 @@ func TestLex(t *testing.T) {
 			`Account 112233112233
   "Developer Access"`,
 			[]lexeme{
-				{
-					typ: typeAccount,
-				},
-				{
-					typ: typeSpace,
-					val: " ",
-				},
-				{
-					typ: typeIdentifier,
-					val: "112233112233",
-				},
-				{
-					typ: typeEOL,
-					val: "\n",
-				},
-				{
-					typ: typeSpace,
-					val: "  ",
-				},
-				{
-					typ: typeValue,
-					val: "Developer Access",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typ: typeAccount},
+				{typeSpace, " "},
+				{typeIdentifier, "112233112233"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "Developer Access"},
+				{typ: typeEOF},
 			},
 		)
 
@@ -406,36 +252,14 @@ func TestLex(t *testing.T) {
 			`Account 112233112233
   Key1 Value1`,
 			[]lexeme{
-				{
-					typ: typeAccount,
-				},
-				{
-					typ: typeSpace,
-					val: " ",
-				},
-				{
-					typ: typeIdentifier,
-					val: "112233112233",
-				},
-				{
-					typ: typeEOL,
-					val: "\n",
-				},
-				{
-					typ: typeSpace,
-					val: "  ",
-				},
-				{
-					typ: typeValue,
-					val: "Key1",
-				},
-				{
-					typ: typeValue,
-					val: "Value1",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typ: typeAccount},
+				{typeSpace, " "},
+				{typeIdentifier, "112233112233"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "Key1"},
+				{typeValue, "Value1"},
+				{typ: typeEOF},
 			},
 		)
 
@@ -445,36 +269,14 @@ func TestLex(t *testing.T) {
 			`Account 112233112233
   "Hello World" Value1`,
 			[]lexeme{
-				{
-					typ: typeAccount,
-				},
-				{
-					typ: typeSpace,
-					val: " ",
-				},
-				{
-					typ: typeIdentifier,
-					val: "112233112233",
-				},
-				{
-					typ: typeEOL,
-					val: "\n",
-				},
-				{
-					typ: typeSpace,
-					val: "  ",
-				},
-				{
-					typ: typeValue,
-					val: "Hello World",
-				},
-				{
-					typ: typeValue,
-					val: "Value1",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typ: typeAccount},
+				{typeSpace, " "},
+				{typeIdentifier, "112233112233"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "Hello World"},
+				{typeValue, "Value1"},
+				{typ: typeEOF},
 			},
 		)
 
@@ -484,36 +286,14 @@ func TestLex(t *testing.T) {
 			`Account 112233112233
   Name "Hello World"`,
 			[]lexeme{
-				{
-					typ: typeAccount,
-				},
-				{
-					typ: typeSpace,
-					val: " ",
-				},
-				{
-					typ: typeIdentifier,
-					val: "112233112233",
-				},
-				{
-					typ: typeEOL,
-					val: "\n",
-				},
-				{
-					typ: typeSpace,
-					val: "  ",
-				},
-				{
-					typ: typeValue,
-					val: "Name",
-				},
-				{
-					typ: typeValue,
-					val: "Hello World",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typ: typeAccount},
+				{typeSpace, " "},
+				{typeIdentifier, "112233112233"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "Name"},
+				{typeValue, "Hello World"},
+				{typ: typeEOF},
 			},
 		)
 
@@ -523,36 +303,14 @@ func TestLex(t *testing.T) {
 			`Account 112233112233
   "What a World" "Hello World"`,
 			[]lexeme{
-				{
-					typ: typeAccount,
-				},
-				{
-					typ: typeSpace,
-					val: " ",
-				},
-				{
-					typ: typeIdentifier,
-					val: "112233112233",
-				},
-				{
-					typ: typeEOL,
-					val: "\n",
-				},
-				{
-					typ: typeSpace,
-					val: "  ",
-				},
-				{
-					typ: typeValue,
-					val: "What a World",
-				},
-				{
-					typ: typeValue,
-					val: "Hello World",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typ: typeAccount},
+				{typeSpace, " "},
+				{typeIdentifier, "112233112233"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "What a World"},
+				{typeValue, "Hello World"},
+				{typ: typeEOF},
 			},
 		)
 
@@ -564,56 +322,19 @@ func TestLex(t *testing.T) {
   Label2
   "Label 3"`,
 			[]lexeme{
-				{
-					typ: typeAccount,
-				},
-				{
-					typ: typeSpace,
-					val: " ",
-				},
-				{
-					typ: typeIdentifier,
-					val: "112233112233",
-				},
-				{
-					typ: typeEOL,
-					val: "\n",
-				},
-				{
-					typ: typeSpace,
-					val: "  ",
-				},
-				{
-					typ: typeValue,
-					val: "Label1",
-				},
-				{
-					typ: typeEOL,
-					val: "\n",
-				},
-				{
-					typ: typeSpace,
-					val: "  ",
-				},
-				{
-					typ: typeValue,
-					val: "Label2",
-				},
-				{
-					typ: typeEOL,
-					val: "\n",
-				},
-				{
-					typ: typeSpace,
-					val: "  ",
-				},
-				{
-					typ: typeValue,
-					val: "Label 3",
-				},
-				{
-					typ: typeEOF,
-				},
+				{typ: typeAccount},
+				{typeSpace, " "},
+				{typeIdentifier, "112233112233"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "Label1"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "Label2"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "Label 3"},
+				{typ: typeEOF},
 			},
 		)
 	})
