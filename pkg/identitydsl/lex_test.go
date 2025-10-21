@@ -5,11 +5,11 @@ import (
 	"testing"
 )
 
-func TestLexer(t *testing.T) {
+func TestLex(t *testing.T) {
 	// We intend to test that the lexer produces the correct token stream for
 	// all scenarios in the README.
 
-	testLexer := func(t *testing.T, name, input string, want []lexeme) {
+	lex := func(t *testing.T, name, input string, want []lexeme) {
 		t.Run(name, func(t *testing.T) {
 			l := lexer{
 				input: input,
@@ -38,7 +38,7 @@ func TestLexer(t *testing.T) {
 		})
 	}
 
-	testLexer(
+	lex(
 		t,
 		"empty file",
 		"",
@@ -50,7 +50,7 @@ func TestLexer(t *testing.T) {
 	)
 
 	t.Run("comments", func(t *testing.T) {
-		testLexer(
+		lex(
 			t,
 			"single",
 			"// A comment line starts with two slashes",
@@ -65,7 +65,7 @@ func TestLexer(t *testing.T) {
 			},
 		)
 
-		testLexer(
+		lex(
 			t,
 			"multiple",
 			"// A comment line starts with two slashes\n// Another comment!",
@@ -90,7 +90,7 @@ func TestLexer(t *testing.T) {
 	})
 
 	t.Run("new lines", func(t *testing.T) {
-		testLexer(
+		lex(
 			t,
 			"n",
 			"\n",
@@ -105,7 +105,7 @@ func TestLexer(t *testing.T) {
 			},
 		)
 
-		testLexer(
+		lex(
 			t,
 			"r",
 			"\r",
@@ -120,7 +120,7 @@ func TestLexer(t *testing.T) {
 			},
 		)
 
-		testLexer(
+		lex(
 			t,
 			"rn",
 			"\r\n",
@@ -137,7 +137,7 @@ func TestLexer(t *testing.T) {
 
 		// Multiple newlines should be one lexeme
 
-		testLexer(
+		lex(
 			t,
 			"nn",
 			"\n\n",
@@ -154,7 +154,7 @@ func TestLexer(t *testing.T) {
 	})
 
 	t.Run("unknown input", func(t *testing.T) {
-		testLexer(
+		lex(
 			t,
 			"line 1",
 			"Hello",
@@ -166,7 +166,7 @@ func TestLexer(t *testing.T) {
 			},
 		)
 
-		testLexer(
+		lex(
 			t,
 			"line 2",
 			"\nCheese",
@@ -184,7 +184,7 @@ func TestLexer(t *testing.T) {
 	})
 
 	t.Run("account entity", func(t *testing.T) {
-		testLexer(
+		lex(
 			t,
 			"no identifier",
 			"Account",
@@ -196,7 +196,7 @@ func TestLexer(t *testing.T) {
 			},
 		)
 
-		testLexer(
+		lex(
 			t,
 			"valid",
 			"Account 112233445566",
@@ -218,7 +218,7 @@ func TestLexer(t *testing.T) {
 			},
 		)
 
-		testLexer(
+		lex(
 			t,
 			"short",
 			"Account 1234567890",
@@ -237,7 +237,7 @@ func TestLexer(t *testing.T) {
 			},
 		)
 
-		testLexer(
+		lex(
 			t,
 			"invalid",
 			"Account Word",
@@ -256,7 +256,7 @@ func TestLexer(t *testing.T) {
 			},
 		)
 
-		testLexer(
+		lex(
 			t,
 			"multiple valid",
 			"Account 000000000000, 111111111111,  222222222222 , 333333333333",
@@ -302,7 +302,7 @@ func TestLexer(t *testing.T) {
 			},
 		)
 
-		testLexer(
+		lex(
 			t,
 			"valid then invalid",
 			"Account 000000000000, Bob,  222222222222 , 333333333333",
