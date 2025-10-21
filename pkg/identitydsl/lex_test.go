@@ -337,5 +337,63 @@ func TestLex(t *testing.T) {
 				{typ: typeEOF},
 			},
 		)
+
+		lex(
+			t,
+			"multiple tags",
+			`Account 112233112233
+  Name Jonathan
+  Age 36
+  "Favorite Pudding" "Rhubarb Crumble"`,
+			[]lexeme{
+				{typ: typeAccount},
+				{typeSpace, " "},
+				{typeIdentifier, "112233112233"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "Name"},
+				{typeValue, "Jonathan"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "Age"},
+				{typeValue, "36"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "Favorite Pudding"},
+				{typeValue, "Rhubarb Crumble"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"tags and labels mixed",
+			`Account 112233112233
+  Billing
+  Organisations
+  Owner Platform
+
+  Product Radio`,
+			[]lexeme{
+				{typ: typeAccount},
+				{typeSpace, " "},
+				{typeIdentifier, "112233112233"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "Billing"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "Organisations"},
+				{typeEOL, "\n"},
+				{typeSpace, "  "},
+				{typeValue, "Owner"},
+				{typeValue, "Platform"},
+				{typeEOL, "\n\n"},
+				{typeSpace, "  "},
+				{typeValue, "Product"},
+				{typeValue, "Radio"},
+				{typ: typeEOF},
+			},
+		)
 	})
 }
