@@ -9,48 +9,50 @@ func TestLexer(t *testing.T) {
 	// We intend to test that the lexer produces the correct token stream for
 	// all scenarios in the README.
 
-	testLexer := func(t *testing.T, input string, want []lexeme) {
-		l := lexer{
-			input: input,
-		}
-
-		l.run(lexDSL)
-
-		got := l.items
-
-		if len(got) != len(want) {
-			t.Errorf("got %d items, want %d", len(got), len(want))
-
-			for i := range l.items {
-				fmt.Printf("%d: %v\n", i, l.items[i])
+	testLexer := func(t *testing.T, name, input string, want []lexeme) {
+		t.Run(name, func(t *testing.T) {
+			l := lexer{
+				input: input,
 			}
 
-			return
-		}
+			l.run(lexDSL)
 
-		for i := range got {
-			if got[i].typ != want[i].typ || got[i].val != want[i].val {
-				t.Errorf("at pos %d, got %v, want %v", i, got[i], want[i])
+			got := l.items
+
+			if len(got) != len(want) {
+				t.Errorf("got %d items, want %d", len(got), len(want))
+
+				for i := range l.items {
+					fmt.Printf("%d: %v\n", i, l.items[i])
+				}
+
 				return
 			}
-		}
+
+			for i := range got {
+				if got[i].typ != want[i].typ || got[i].val != want[i].val {
+					t.Errorf("at pos %d, got %v, want %v", i, got[i], want[i])
+					return
+				}
+			}
+		})
 	}
 
-	t.Run("empty file", func(t *testing.T) {
-		testLexer(
-			t,
-			"",
-			[]lexeme{
-				{
-					typ: typeEOF,
-				},
+	testLexer(
+		t,
+		"empty file",
+		"",
+		[]lexeme{
+			{
+				typ: typeEOF,
 			},
-		)
-	})
+		},
+	)
 
 	t.Run("comments", func(t *testing.T) {
 		testLexer(
 			t,
+			"single",
 			"// A comment line starts with two slashes",
 			[]lexeme{
 				{
@@ -65,6 +67,7 @@ func TestLexer(t *testing.T) {
 
 		testLexer(
 			t,
+			"multiple",
 			"// A comment line starts with two slashes\n// Another comment!",
 			[]lexeme{
 				{
@@ -87,9 +90,9 @@ func TestLexer(t *testing.T) {
 	})
 
 	t.Run("new lines", func(t *testing.T) {
-
 		testLexer(
 			t,
+			"n",
 			"\n",
 			[]lexeme{
 				{
@@ -104,6 +107,7 @@ func TestLexer(t *testing.T) {
 
 		testLexer(
 			t,
+			"r",
 			"\r",
 			[]lexeme{
 				{
@@ -118,6 +122,7 @@ func TestLexer(t *testing.T) {
 
 		testLexer(
 			t,
+			"rn",
 			"\r\n",
 			[]lexeme{
 				{
@@ -134,6 +139,7 @@ func TestLexer(t *testing.T) {
 
 		testLexer(
 			t,
+			"nn",
 			"\n\n",
 			[]lexeme{
 				{
@@ -150,6 +156,7 @@ func TestLexer(t *testing.T) {
 	t.Run("unknown input", func(t *testing.T) {
 		testLexer(
 			t,
+			"line 1",
 			"Hello",
 			[]lexeme{
 				{
@@ -161,6 +168,7 @@ func TestLexer(t *testing.T) {
 
 		testLexer(
 			t,
+			"line 2",
 			"\nCheese",
 			[]lexeme{
 				{
@@ -178,6 +186,7 @@ func TestLexer(t *testing.T) {
 	t.Run("account entity", func(t *testing.T) {
 		testLexer(
 			t,
+			"no identifier",
 			"Account",
 			[]lexeme{
 				{
@@ -189,6 +198,7 @@ func TestLexer(t *testing.T) {
 
 		testLexer(
 			t,
+			"valid",
 			"Account 112233445566",
 			[]lexeme{
 				{
@@ -210,7 +220,8 @@ func TestLexer(t *testing.T) {
 
 		testLexer(
 			t,
-			"Account 1122334455",
+			"short",
+			"Account 1234567890",
 			[]lexeme{
 				{
 					typ: typeAccount,
@@ -228,7 +239,8 @@ func TestLexer(t *testing.T) {
 
 		testLexer(
 			t,
-			"Account ABC1122334455",
+			"invalid",
+			"Account Word",
 			[]lexeme{
 				{
 					typ: typeAccount,
