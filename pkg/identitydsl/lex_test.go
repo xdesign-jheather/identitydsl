@@ -22,8 +22,14 @@ func TestLex(t *testing.T) {
 			if len(got) != len(want) {
 				t.Errorf("got %d items, want %d", len(got), len(want))
 
+				fmt.Println("Got:")
 				for i := range l.items {
-					fmt.Printf("%d: %v\n", i, l.items[i])
+					fmt.Printf("%d: %#v\n", i, l.items[i])
+				}
+
+				fmt.Println("Wanted:")
+				for i := range want {
+					fmt.Printf("%d: %#v\n", i, want[i])
 				}
 
 				return
