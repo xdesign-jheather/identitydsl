@@ -23,6 +23,14 @@ func lexDSL(l *lexer) stateFunc {
 		return lexAccount
 	}
 
+	if l.peekString("User ") {
+		return lexUser
+	}
+
+	if l.peekString("Group ") {
+		return lexGroup
+	}
+
 	return lexUnknown
 }
 
@@ -51,6 +59,72 @@ func lexAccount(l *lexer) stateFunc {
 
 		if l.width != 12 {
 			return l.errorf("Bad length account ID on line %d position %d", l.items.currentLineNumber(), pos)
+		}
+
+		l.emit(typeIdentifier)
+
+		if l.acceptRun(", ") {
+			l.ignore()
+			continue
+		}
+
+		if l.peek() == eof {
+			return lexDSL
+		}
+
+		if r := l.peek(); r == '\r' || r == '\n' {
+			l.acceptRun("\r\n")
+			l.emit(typeEOL)
+			break
+		}
+	}
+
+	return lexTagsOrLabels
+}
+
+func lexGroup(l *lexer) stateFunc {
+	l.acceptString("Group")
+	l.ignore()
+	l.emit(typeGroup)
+	l.acceptRun(" ")
+	l.ignore()
+
+	for pos := 1; ; pos++ {
+		if !l.acceptRun(valueRunes) {
+			return l.errorf("Invalid group ID on line %d position %d", l.items.currentLineNumber(), pos)
+		}
+
+		l.emit(typeIdentifier)
+
+		if l.acceptRun(", ") {
+			l.ignore()
+			continue
+		}
+
+		if l.peek() == eof {
+			return lexDSL
+		}
+
+		if r := l.peek(); r == '\r' || r == '\n' {
+			l.acceptRun("\r\n")
+			l.emit(typeEOL)
+			break
+		}
+	}
+
+	return lexTagsOrLabels
+}
+
+func lexUser(l *lexer) stateFunc {
+	l.acceptString("User")
+	l.ignore()
+	l.emit(typeUser)
+	l.acceptRun(" ")
+	l.ignore()
+
+	for pos := 1; ; pos++ {
+		if !l.acceptRun(valueRunes) {
+			return l.errorf("Invalid user ID on line %d position %d", l.items.currentLineNumber(), pos)
 		}
 
 		l.emit(typeIdentifier)

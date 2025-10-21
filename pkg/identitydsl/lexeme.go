@@ -8,6 +8,8 @@ const (
 	typeEOL
 	typeError
 	typeAccount
+	typeGroup
+	typeUser
 	typeIdentifier
 	typeSpace
 	typeValue
