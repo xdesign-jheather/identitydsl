@@ -32,32 +32,32 @@ You can add comments:
 To create an account:
 
 ```
-Account 12345678
+Account 123456789012
 ```
 
 To add labels to an account:
 
 ```
-Account 12345678
-   Label1
-   Label2
-   "Label 3"
+Account 123456789012
+	Label1
+	Label2
+	"Label 3"
 ```
 
 To add tag to an account:
 
 ```
-Account 12345678
-   Name Sales
-   Contact "Bobby Tables"
+Account 123456789012
+	Name Sales
+	Contact "Bobby Tables"
 ```
 
 To add labels or tags to multiple accounts at once:
 
 ```
-Account 12345678, 87654321
-   Owner Legal
-   Environment production
+Account 123456789012, 098765432109
+	Owner Legal
+	Environment production
 ```
 
 ### Users
@@ -74,8 +74,8 @@ Tags and labels can be added to one or more groups as described with `Account`:
 // Add the Team tag and BillingAccess label to 3 users at once
 
 User A, B, C
-  Team Platform
-  BillingAccess
+	Team Platform
+	BillingAccess
 ```
 
 ### Groups
@@ -92,8 +92,8 @@ Tags and labels can be added to one or more groups as described with `Account`:
 // Add the Department tag and BillingAccess label to 3 groups at once
 
 Group FooDevelopers, FooTesters, FooFighters
-  Department Foo
-  BillingAccess
+	Department Foo
+	BillingAccess
 ```
 
 ### Roles
@@ -117,8 +117,8 @@ To add additional/alternative policies to a role:
 // This will create a `ReadOnly` permission set with `OtherPolicy` and `AnotherPolicy` policies attached.
 
 Role ReadOnly
-  OtherPolicy
-  AnotherPolicy
+	OtherPolicy
+	AnotherPolicy
 ```
 
 Short names indicate these are policies you would like to implement using this IaC output.
@@ -127,7 +127,7 @@ If you want to use an existing customer managed or AWS managed policy instead, j
 
 ```
 Role FullAccess
-  arn:aws:iam::aws:policy/AmazonEC2FullAccess
+	arn:aws:iam::aws:policy/AmazonEC2FullAccess
 ```
 
 > **_Note_** Roles cannot be grouped with tags or labels. This is intentional and each assignment must be explicit and intentional.
@@ -140,8 +140,8 @@ Labels are keyless string associations for grouping entities. We support spaces 
 // Account `12345` shows 2 ways to define labels
 
 Account 12345
-    RDS
-    "Website DR"
+	RDS
+	"Website DR"
 ```
 
 > **_Note_** Labels that match IDs are not permitted and will produce an error.
@@ -155,10 +155,10 @@ Tags are key value pairs used for filtering through entities, much like AWS. We 
 // User `Bob` shows 4 ways to define tags
 
 User Bob.Smith
-    Email bob@example.com
-    "Full Name" "Bob Smith"
-    "Given Name" Bob
-    Access "Developer Level 4"
+	Email bob@example.com
+	"Full Name" "Bob Smith"
+	"Given Name" Bob
+	Access "Developer Level 4"
 ```
 
 > **_Note_** In practice we expect most organisations use one or the other, but we support both. 
@@ -189,9 +189,9 @@ To express a single assignment:
 // This will produce 1 assignment
 
 Assign
-  Account Account1
-  Role Role1
-  Group Group1
+	Account Account1
+	Role Role1
+	Group Group1
 ```
 
 To express multiple entities, just provide a comma delimited list:
@@ -200,9 +200,9 @@ To express multiple entities, just provide a comma delimited list:
 // This will produce 8 assignments
 
 Assign
-  Account Account1, Account2
-  Role Role1, Role2
-  User User1, User2
+	Account Account1, Account2
+	Role Role1, Role2
+	User User1, User2
 ```
 
 Rather than listing these explicitly, you can make use of your tags and labels for `Account` and `Group`:
@@ -211,14 +211,14 @@ Rather than listing these explicitly, you can make use of your tags and labels f
 // Tag two accounts with Owner
 
 Account 1, 2
-  Owner Legal
-  
+	Owner Legal
+	
 // Assign to accounts with Owner = Legal (1 and 2 in this case)   
-  
+	
 Assign
-  Account Owner Legal
-  Role Role1
-  Group Group1
+	Account Owner Legal
+	Role Role1
+	Group Group1
 ```
 
 You can go one step further and specify multiple filters, consisting of tags, labels or IDs:
@@ -227,19 +227,19 @@ You can go one step further and specify multiple filters, consisting of tags, la
 // Some accounts
 
 Account Hello, World
-  Team Data
-  
+	Team Data
+	
 Account Foo
-  Snowflake
+	Snowflake
 
 Account Bar
-  
+	
 // Assign to 4 accounts using 3 methods of selection:
-  
+	
 Assign
-  Account Team Data, Snowflake, Bar
-  Role DBAReadOnly
-  Group DBA
+	Account Team Data, Snowflake, Bar
+	Role DBAReadOnly
+	Group DBA
 ```
 
 ### Contexts
@@ -250,26 +250,26 @@ For example, the following two examples are functionally the same:
 
 ```
 Assign
-  Account Team Data
-  Role ReadOnly
-  Group DataTeam
+	Account Team Data
+	Role ReadOnly
+	Group DataTeam
 
 Assign
-  Account Team Data
-  Role ReadOnlyGuest
-  Group AnotherTeam
+	Account Team Data
+	Role ReadOnlyGuest
+	Group AnotherTeam
 ```
 
 ```
 Accounts Team Data
 
-  Assign
-    Role ReadOnly
-    Group DataTeam
+	Assign
+		Role ReadOnly
+		Group DataTeam
 
-  Assign
-    Role ReadOnlyGuest
-    Group AnotherTeam
+	Assign
+		Role ReadOnlyGuest
+		Group AnotherTeam
 ```
 
 You can still specify `Account` in the assignment if you wish, but the context will apply it's filter first.
@@ -279,21 +279,21 @@ This is a handy way to vary access in different accounts for example:
 ```
 Accounts Team Data
 
-  Assign
-    Account Environment Dev
-    Role ReadWrite
-    Group DataTeamOperations, DataTeamDeveloper
+	Assign
+		Account Environment Dev
+		Role ReadWrite
+		Group DataTeamOperations, DataTeamDeveloper
 
-  Assign
-    Account Environment Production
-    Role ReadOnly
-    Group DataTeamDeveloper
+	Assign
+		Account Environment Production
+		Role ReadOnly
+		Group DataTeamDeveloper
 
-  Assign
-    Account Environment Production
-    Role ReadWrite
-    Group DataTeamOperations
-    
+	Assign
+		Account Environment Production
+		Role ReadWrite
+		Group DataTeamOperations
+	
 ```
 
 The example above can be refined further by nesting contexts. The following is functionally equivalent:
@@ -301,21 +301,21 @@ The example above can be refined further by nesting contexts. The following is f
 ```
 Accounts Team Data
 
-  Accounts Environment Dev
-    
-    Assign
-      Role ReadWrite
-      Group DataTeamDeveloper, DataTeamOperations
+	Accounts Environment Dev
+	
+		Assign
+			Role ReadWrite
+			Group DataTeamDeveloper, DataTeamOperations
 
-  Accounts Environment Production
+	Accounts Environment Production
 
-    Assign
-      Role ReadOnly
-      Group DataTeamDeveloper
-
-    Assign
-      Role ReadWrite
-      Group DataTeamOperations
+		Assign
+			Role ReadOnly
+			Group DataTeamDeveloper
+	
+		Assign
+			Role ReadWrite
+			Group DataTeamOperations
 ```
 
 ## Commands
