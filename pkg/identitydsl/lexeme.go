@@ -3,16 +3,15 @@ package identitydsl
 type lexemeType int
 
 const (
-	typeEOF lexemeType = iota
-	typeComment
+	typeError lexemeType = iota
+	typeEOF
 	typeEOL
-	typeError
+	typeComment
+	typeSpace
+	typeValue
 	typeAccount
 	typeGroup
 	typeUser
-	typeIdentifier
-	typeSpace
-	typeValue
 )
 
 type lexeme struct {

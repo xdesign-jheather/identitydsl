@@ -61,7 +61,7 @@ func lexAccount(l *lexer) stateFunc {
 			return l.errorf("Bad length account ID on line %d position %d", l.items.currentLineNumber(), pos)
 		}
 
-		l.emit(typeIdentifier)
+		l.emit(typeValue)
 
 		if l.acceptRun(", ") {
 			l.ignore()
@@ -94,7 +94,7 @@ func lexGroup(l *lexer) stateFunc {
 			return l.errorf("Invalid group ID on line %d position %d", l.items.currentLineNumber(), pos)
 		}
 
-		l.emit(typeIdentifier)
+		l.emit(typeValue)
 
 		if l.acceptRun(", ") {
 			l.ignore()
@@ -127,7 +127,7 @@ func lexUser(l *lexer) stateFunc {
 			return l.errorf("Invalid user ID on line %d position %d", l.items.currentLineNumber(), pos)
 		}
 
-		l.emit(typeIdentifier)
+		l.emit(typeValue)
 
 		if l.acceptRun(", ") {
 			l.ignore()
