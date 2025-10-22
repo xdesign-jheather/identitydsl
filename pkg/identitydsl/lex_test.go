@@ -386,7 +386,7 @@ func TestLex(t *testing.T) {
 
 		lex(
 			t,
-			"invalid character used",
+			"empty tag value",
 			`Account 123456789012
 	Name ""`,
 			[]lexeme{
@@ -407,6 +407,506 @@ func TestLex(t *testing.T) {
 			[]lexeme{
 				{typ: typeAccount},
 				{typeValue, "123456789012"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Name"},
+				{typeError, "Invalid character ? on line 2"},
+			},
+		)
+	})
+
+	t.Run("group entity", func(t *testing.T) {
+
+		lex(
+			t,
+			"no identifier",
+			"Group",
+			[]lexeme{
+				{typeError, "Unknown input 'Group' on line 1"},
+			},
+		)
+
+		lex(
+			t,
+			"valid",
+			"Group Developers",
+			[]lexeme{
+				{typ: typeGroup},
+				{typeValue, "Developers"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"multiple valid",
+			"Group Lovers, Haters",
+			[]lexeme{
+				{typ: typeGroup},
+				{typeValue, "Lovers"},
+				{typeValue, "Haters"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"valid then invalid",
+			"Group Lovers, Haters, !!!",
+			[]lexeme{
+				{typ: typeGroup},
+				{typeValue, "Lovers"},
+				{typeValue, "Haters"},
+				{typeError, "Invalid group ID on line 1 position 3"},
+			},
+		)
+
+		lex(
+			t,
+			"basic label",
+			`Group Testers
+	Label1`,
+			[]lexeme{
+				{typ: typeGroup},
+				{typeValue, "Testers"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Label1"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"quoted label",
+			`Group Developers
+	"Developer Access"`,
+			[]lexeme{
+				{typ: typeGroup},
+				{typeValue, "Developers"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Developer Access"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"key value pair",
+			`Group Infosec
+	Key1 Value1`,
+			[]lexeme{
+				{typ: typeGroup},
+				{typeValue, "Infosec"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Key1"},
+				{typeValue, "Value1"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"key value pair quoted key",
+			`Group Cheeseballs
+	"Hello World" Value1`,
+			[]lexeme{
+				{typ: typeGroup},
+				{typeValue, "Cheeseballs"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Hello World"},
+				{typeValue, "Value1"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"key value pair quoted value",
+			`Group TeamA
+	Name "Hello World"`,
+			[]lexeme{
+				{typ: typeGroup},
+				{typeValue, "TeamA"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Name"},
+				{typeValue, "Hello World"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"key value pair quoted both",
+			`Group Session
+	"What a World" "Hello World"`,
+			[]lexeme{
+				{typ: typeGroup},
+				{typeValue, "Session"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "What a World"},
+				{typeValue, "Hello World"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"multiple labels",
+			`Group Developers
+	Label1
+	Label2
+	"Label 3"`,
+			[]lexeme{
+				{typ: typeGroup},
+				{typeValue, "Developers"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Label1"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Label2"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Label 3"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"multiple tags",
+			`Group Solo
+	Name Jonathan
+	Age 36
+	"Favorite Pudding" "Rhubarb Crumble"`,
+			[]lexeme{
+				{typ: typeGroup},
+				{typeValue, "Solo"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Name"},
+				{typeValue, "Jonathan"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Age"},
+				{typeValue, "36"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Favorite Pudding"},
+				{typeValue, "Rhubarb Crumble"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"tags and labels mixed",
+			`Group 112233112233
+	Billing
+	Organisations
+	Owner Platform
+
+	Product Radio`,
+			[]lexeme{
+				{typ: typeGroup},
+				{typeValue, "112233112233"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Billing"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Organisations"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Owner"},
+				{typeValue, "Platform"},
+				{typeEOL, "\n\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Product"},
+				{typeValue, "Radio"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"empty tag value",
+			`Group TeamB
+	Name ""`,
+			[]lexeme{
+				{typ: typeGroup},
+				{typeValue, "TeamB"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Name"},
+				{typeError, "Empty value on line 2"},
+			},
+		)
+
+		lex(
+			t,
+			"invalid character used",
+			`Group Hello
+	Name "?"`,
+			[]lexeme{
+				{typ: typeGroup},
+				{typeValue, "Hello"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Name"},
+				{typeError, "Invalid character ? on line 2"},
+			},
+		)
+	})
+
+	t.Run("user entity", func(t *testing.T) {
+
+		lex(
+			t,
+			"no identifier",
+			"User",
+			[]lexeme{
+				{typeError, "Unknown input 'User' on line 1"},
+			},
+		)
+
+		lex(
+			t,
+			"valid",
+			"User Developers",
+			[]lexeme{
+				{typ: typeUser},
+				{typeValue, "Developers"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"multiple valid",
+			"User Lovers, Haters",
+			[]lexeme{
+				{typ: typeUser},
+				{typeValue, "Lovers"},
+				{typeValue, "Haters"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"valid then invalid",
+			"User Lovers, Haters, !!!",
+			[]lexeme{
+				{typ: typeUser},
+				{typeValue, "Lovers"},
+				{typeValue, "Haters"},
+				{typeError, "Invalid user ID on line 1 position 3"},
+			},
+		)
+
+		lex(
+			t,
+			"basic label",
+			`User Testers
+	Label1`,
+			[]lexeme{
+				{typ: typeUser},
+				{typeValue, "Testers"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Label1"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"quoted label",
+			`User Developers
+	"Developer Access"`,
+			[]lexeme{
+				{typ: typeUser},
+				{typeValue, "Developers"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Developer Access"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"key value pair",
+			`User Infosec
+	Key1 Value1`,
+			[]lexeme{
+				{typ: typeUser},
+				{typeValue, "Infosec"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Key1"},
+				{typeValue, "Value1"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"key value pair quoted key",
+			`User Cheeseballs
+	"Hello World" Value1`,
+			[]lexeme{
+				{typ: typeUser},
+				{typeValue, "Cheeseballs"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Hello World"},
+				{typeValue, "Value1"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"key value pair quoted value",
+			`User TeamA
+	Name "Hello World"`,
+			[]lexeme{
+				{typ: typeUser},
+				{typeValue, "TeamA"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Name"},
+				{typeValue, "Hello World"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"key value pair quoted both",
+			`User Session
+	"What a World" "Hello World"`,
+			[]lexeme{
+				{typ: typeUser},
+				{typeValue, "Session"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "What a World"},
+				{typeValue, "Hello World"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"multiple labels",
+			`User Developers
+	Label1
+	Label2
+	"Label 3"`,
+			[]lexeme{
+				{typ: typeUser},
+				{typeValue, "Developers"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Label1"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Label2"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Label 3"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"multiple tags",
+			`User Solo
+	Name Jonathan
+	Age 36
+	"Favorite Pudding" "Rhubarb Crumble"`,
+			[]lexeme{
+				{typ: typeUser},
+				{typeValue, "Solo"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Name"},
+				{typeValue, "Jonathan"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Age"},
+				{typeValue, "36"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Favorite Pudding"},
+				{typeValue, "Rhubarb Crumble"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"tags and labels mixed",
+			`User 112233112233
+	Billing
+	Organisations
+	Owner Platform
+
+	Product Radio`,
+			[]lexeme{
+				{typ: typeUser},
+				{typeValue, "112233112233"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Billing"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Organisations"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Owner"},
+				{typeValue, "Platform"},
+				{typeEOL, "\n\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Product"},
+				{typeValue, "Radio"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"empty tag value",
+			`User TeamB
+	Name ""`,
+			[]lexeme{
+				{typ: typeUser},
+				{typeValue, "TeamB"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Name"},
+				{typeError, "Empty value on line 2"},
+			},
+		)
+
+		lex(
+			t,
+			"invalid character used",
+			`User Hello
+	Name "?"`,
+			[]lexeme{
+				{typ: typeUser},
+				{typeValue, "Hello"},
 				{typeEOL, "\n"},
 				{typeSpace, "\t"},
 				{typeValue, "Name"},
