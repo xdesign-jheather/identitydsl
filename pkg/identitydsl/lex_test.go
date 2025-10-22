@@ -215,12 +215,12 @@ func TestLex(t *testing.T) {
 			t,
 			"basic label",
 			`Account 112233112233
-  Label1`,
+	Label1`,
 			[]lexeme{
 				{typ: typeAccount},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Label1"},
 				{typ: typeEOF},
 			},
@@ -230,12 +230,12 @@ func TestLex(t *testing.T) {
 			t,
 			"quoted label",
 			`Account 112233112233
-  "Developer Access"`,
+	"Developer Access"`,
 			[]lexeme{
 				{typ: typeAccount},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Developer Access"},
 				{typ: typeEOF},
 			},
@@ -245,12 +245,12 @@ func TestLex(t *testing.T) {
 			t,
 			"key value pair",
 			`Account 112233112233
-  Key1 Value1`,
+	Key1 Value1`,
 			[]lexeme{
 				{typ: typeAccount},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Key1"},
 				{typeValue, "Value1"},
 				{typ: typeEOF},
@@ -261,12 +261,12 @@ func TestLex(t *testing.T) {
 			t,
 			"key value pair quoted key",
 			`Account 112233112233
-  "Hello World" Value1`,
+	"Hello World" Value1`,
 			[]lexeme{
 				{typ: typeAccount},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Hello World"},
 				{typeValue, "Value1"},
 				{typ: typeEOF},
@@ -277,12 +277,12 @@ func TestLex(t *testing.T) {
 			t,
 			"key value pair quoted value",
 			`Account 112233112233
-  Name "Hello World"`,
+	Name "Hello World"`,
 			[]lexeme{
 				{typ: typeAccount},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Name"},
 				{typeValue, "Hello World"},
 				{typ: typeEOF},
@@ -293,12 +293,12 @@ func TestLex(t *testing.T) {
 			t,
 			"key value pair quoted both",
 			`Account 112233112233
-  "What a World" "Hello World"`,
+	"What a World" "Hello World"`,
 			[]lexeme{
 				{typ: typeAccount},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "What a World"},
 				{typeValue, "Hello World"},
 				{typ: typeEOF},
@@ -309,20 +309,20 @@ func TestLex(t *testing.T) {
 			t,
 			"multiple labels",
 			`Account 112233112233
-  Label1
-  Label2
-  "Label 3"`,
+	Label1
+	Label2
+	"Label 3"`,
 			[]lexeme{
 				{typ: typeAccount},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Label1"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Label2"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Label 3"},
 				{typ: typeEOF},
 			},
@@ -332,22 +332,22 @@ func TestLex(t *testing.T) {
 			t,
 			"multiple tags",
 			`Account 112233112233
-  Name Jonathan
-  Age 36
-  "Favorite Pudding" "Rhubarb Crumble"`,
+	Name Jonathan
+	Age 36
+	"Favorite Pudding" "Rhubarb Crumble"`,
 			[]lexeme{
 				{typ: typeAccount},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Name"},
 				{typeValue, "Jonathan"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Age"},
 				{typeValue, "36"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Favorite Pudding"},
 				{typeValue, "Rhubarb Crumble"},
 				{typ: typeEOF},
@@ -358,26 +358,26 @@ func TestLex(t *testing.T) {
 			t,
 			"tags and labels mixed",
 			`Account 112233112233
-  Billing
-  Organisations
-  Owner Platform
+	Billing
+	Organisations
+	Owner Platform
 
-  Product Radio`,
+	Product Radio`,
 			[]lexeme{
 				{typ: typeAccount},
 				{typeIdentifier, "112233112233"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Billing"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Organisations"},
 				{typeEOL, "\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Owner"},
 				{typeValue, "Platform"},
 				{typeEOL, "\n\n"},
-				{typeSpace, "  "},
+				{typeSpace, "\t"},
 				{typeValue, "Product"},
 				{typeValue, "Radio"},
 				{typ: typeEOF},

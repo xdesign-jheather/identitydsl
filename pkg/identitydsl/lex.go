@@ -151,7 +151,7 @@ func lexUser(l *lexer) stateFunc {
 func lexTagsOrLabels(l *lexer) stateFunc {
 	// Tags and labels are always indented
 
-	if !l.acceptString("  ") {
+	if !l.acceptRun("\t") {
 		return lexDSL
 	}
 
