@@ -151,7 +151,7 @@ func TestLex(t *testing.T) {
 			"no identifier",
 			"Account",
 			[]lexeme{
-				{typeError, "Unknown input 'Account' on line 1"},
+				{typeError, "Account not specified on line 1"},
 			},
 		)
 
@@ -422,7 +422,7 @@ func TestLex(t *testing.T) {
 			"no identifier",
 			"Group",
 			[]lexeme{
-				{typeError, "Unknown input 'Group' on line 1"},
+				{typeError, "Group not specified on line 1"},
 			},
 		)
 
@@ -672,7 +672,7 @@ func TestLex(t *testing.T) {
 			"no identifier",
 			"User",
 			[]lexeme{
-				{typeError, "Unknown input 'User' on line 1"},
+				{typeError, "User not specified on line 1"},
 			},
 		)
 

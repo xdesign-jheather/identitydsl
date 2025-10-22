@@ -23,12 +23,24 @@ func lexDSL(l *lexer) stateFunc {
 		return lexAccount
 	}
 
+	if l.acceptString("Account") && (l.peek() == eof || l.accept("\r\n")) {
+		return l.errorf("Account not specified on line %d", l.items.currentLineNumber())
+	}
+
 	if l.peekString("User ") {
 		return lexUser
 	}
 
+	if l.acceptString("User") && (l.peek() == eof || l.accept("\r\n")) {
+		return l.errorf("User not specified on line %d", l.items.currentLineNumber())
+	}
+
 	if l.peekString("Group ") {
 		return lexGroup
+	}
+
+	if l.acceptString("Group") && (l.peek() == eof || l.accept("\r\n")) {
+		return l.errorf("Group not specified on line %d", l.items.currentLineNumber())
 	}
 
 	return lexUnknown
