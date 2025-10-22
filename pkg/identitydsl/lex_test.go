@@ -383,5 +383,35 @@ func TestLex(t *testing.T) {
 				{typ: typeEOF},
 			},
 		)
+
+		lex(
+			t,
+			"invalid character used",
+			`Account 123456789012
+	Name ""`,
+			[]lexeme{
+				{typ: typeAccount},
+				{typeValue, "123456789012"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Name"},
+				{typeError, "Empty value on line 2"},
+			},
+		)
+
+		lex(
+			t,
+			"invalid character used",
+			`Account 123456789012
+	Name "?"`,
+			[]lexeme{
+				{typ: typeAccount},
+				{typeValue, "123456789012"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "Name"},
+				{typeError, "Invalid character ? on line 2"},
+			},
+		)
 	})
 }
