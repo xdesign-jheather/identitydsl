@@ -1,6 +1,6 @@
 package identitydsl
 
-const valueRunes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.@£$"
+const valueRunes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_+=.@-"
 
 type stateFunc func(*lexer) stateFunc
 
@@ -41,6 +41,14 @@ func lexDSL(l *lexer) stateFunc {
 
 	if l.acceptString("Group") && (l.peek() == eof || l.accept("\r\n")) {
 		return l.errorf("Group not specified on line %d", l.items.currentLineNumber())
+	}
+
+	if l.peekString("Role ") {
+		return lexRole
+	}
+
+	if l.acceptString("Role") && (l.peek() == eof || l.accept("\r\n")) {
+		return l.errorf("Role not specified on line %d", l.items.currentLineNumber())
 	}
 
 	return lexUnknown
@@ -158,6 +166,63 @@ func lexUser(l *lexer) stateFunc {
 	}
 
 	return lexTagsOrLabels
+}
+
+func lexRole(l *lexer) stateFunc {
+	l.acceptString("Role")
+	l.ignore()
+	l.emit(typeRole)
+	l.acceptRun(" ")
+	l.ignore()
+
+	for pos := 1; ; pos++ {
+		if !l.acceptRun(valueRunes) {
+			return l.errorf("Invalid role ID on line %d position %d", l.items.currentLineNumber(), pos)
+		}
+
+		l.emit(typeValue)
+
+		if l.acceptRun(", ") {
+			l.ignore()
+			continue
+		}
+
+		if l.peek() == eof {
+			return lexDSL
+		}
+
+		if r := l.peek(); r == '\r' || r == '\n' {
+			l.acceptRun("\r\n")
+			l.emit(typeEOL)
+			break
+		}
+	}
+
+	return lexPolicies
+}
+
+func lexPolicies(l *lexer) stateFunc {
+	if !l.acceptRun("\t") {
+		return lexDSL
+	}
+
+	l.emit(typeSpace)
+
+	if !l.acceptRun(valueRunes) {
+		return l.errorf("No policies found on line %d", l.items.currentLineNumber())
+	}
+
+	l.emit(typeValue)
+
+	switch l.peek() {
+	case eof:
+		return lexDSL
+	case '\r', '\n':
+		l.acceptRun("\r\n")
+		l.emit(typeEOL)
+	}
+
+	return lexPolicies
 }
 
 func lexTagsOrLabels(l *lexer) stateFunc {

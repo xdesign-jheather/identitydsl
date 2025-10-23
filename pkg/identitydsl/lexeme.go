@@ -12,6 +12,7 @@ const (
 	typeAccount
 	typeGroup
 	typeUser
+	typeRole
 )
 
 type lexeme struct {

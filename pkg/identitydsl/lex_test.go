@@ -914,4 +914,83 @@ func TestLex(t *testing.T) {
 			},
 		)
 	})
+
+	t.Run("role", func(t *testing.T) {
+		lex(
+			t,
+			"no identifier",
+			"Role",
+			[]lexeme{
+				{typeError, "Role not specified on line 1"},
+			},
+		)
+
+		lex(
+			t,
+			"valid",
+			"Role ReadOnly",
+			[]lexeme{
+				{typ: typeRole},
+				{typeValue, "ReadOnly"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"not valid",
+			"Role ?",
+			[]lexeme{
+				{typ: typeRole},
+				{typeError, "Invalid role ID on line 1 position 1"},
+			},
+		)
+
+		lex(
+			t,
+			"1 valid 1 not",
+			`Role ReadOnly, ?`,
+			[]lexeme{
+				{typ: typeRole},
+				{typeValue, "ReadOnly"},
+				{typeError, "Invalid role ID on line 1 position 2"},
+			},
+		)
+
+		lex(
+			t,
+			"valid one policy",
+			`Role ReadOnly
+	OneMorePolicy`,
+			[]lexeme{
+				{typ: typeRole},
+				{typeValue, "ReadOnly"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "OneMorePolicy"},
+				{typ: typeEOF},
+			},
+		)
+
+		lex(
+			t,
+			"role many valid",
+			`Role ReadOnly, ReadAndWrite
+	OneMorePolicy
+	JustOneMorePolicy`,
+			[]lexeme{
+				{typ: typeRole},
+				{typeValue, "ReadOnly"},
+				{typeValue, "ReadAndWrite"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "OneMorePolicy"},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeValue, "JustOneMorePolicy"},
+				{typ: typeEOF},
+			},
+		)
+
+	})
 }
