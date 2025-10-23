@@ -78,13 +78,10 @@ func (l *lexer) acceptRun(runes string) bool {
 			break
 		}
 	}
-	if l.pos > was {
-		l.width = l.pos - was
-	}
 	return l.pos > was
 }
 
-func (l *lexer) acceptLine() {
+func (l *lexer) acceptToLineEnding() {
 	for {
 		r := l.next()
 
@@ -104,7 +101,6 @@ func (l *lexer) acceptString(test string) bool {
 		return false
 	}
 	l.pos += len(test)
-	l.width = len(test)
 	return true
 }
 
