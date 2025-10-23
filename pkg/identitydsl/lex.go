@@ -55,12 +55,12 @@ func lexDSL(l *lexer) stateFunc {
 }
 
 func lexUnknown(l *lexer) stateFunc {
-	l.acceptLine()
+	l.acceptToLineEnding()
 	return l.errorf("Unknown input '%s' on line %d", l.value(), l.items.currentLineNumber())
 }
 
 func lexComment(l *lexer) stateFunc {
-	l.acceptLine()
+	l.acceptToLineEnding()
 	l.emit(typeComment)
 	return lexDSL
 }
@@ -77,7 +77,7 @@ func lexAccount(l *lexer) stateFunc {
 			return l.errorf("Invalid account ID on line %d position %d", l.items.currentLineNumber(), pos)
 		}
 
-		if l.width != 12 {
+		if len(l.value()) != 12 {
 			return l.errorf("Bad length account ID on line %d position %d", l.items.currentLineNumber(), pos)
 		}
 
