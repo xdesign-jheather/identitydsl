@@ -993,4 +993,144 @@ func TestLex(t *testing.T) {
 		)
 
 	})
+
+	t.Run("assignments", func(t *testing.T) {
+		lex(
+			t,
+			"eof",
+			`Assign`,
+			lexemes{
+				{typeError, "Incomplete assignment on line 1"},
+			})
+
+		lex(
+			t,
+			"extra",
+			`Assign Something`,
+			lexemes{
+				{typeError, "Unexpected ' Something' after assignment on line 1"},
+			})
+
+		lex(
+			t,
+			"empty group",
+			`Assign
+	Group`,
+			lexemes{
+				{typ: typeAssignment},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeError, "Empty assignment group on line 2"},
+			})
+
+		lex(
+			t,
+			"empty user",
+			`
+Assign
+	User
+`,
+			lexemes{
+				{typeEOL, "\n"},
+				{typ: typeAssignment},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeError, "Empty assignment user on line 3"},
+			})
+
+		lex(
+			t,
+			"empty role",
+			`Assign
+	Role
+`,
+			lexemes{
+				{typ: typeAssignment},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeError, "Empty assignment role on line 2"},
+			})
+
+		lex(
+			t,
+			"unknown role appendage",
+			`Assign
+	Roles
+`,
+			lexemes{
+				{typ: typeAssignment},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeError, "Unknown input 'Roles' on line 2 for assignment"},
+			})
+
+		lex(
+			t,
+			"unknown group appendage",
+			`Assign
+	Groups
+`,
+			lexemes{
+				{typ: typeAssignment},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeError, "Unknown input 'Groups' on line 2 for assignment"},
+			})
+
+		lex(
+			t,
+			"unknown user appendage",
+			`Assign
+	Userx
+`,
+			lexemes{
+				{typ: typeAssignment},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typeError, "Unknown input 'Userx' on line 2 for assignment"},
+			})
+
+		lex(
+			t,
+			"group simple",
+			`Assign
+	Group Hello`,
+			lexemes{
+				{typ: typeAssignment},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typ: typeGroup},
+				{typeValue, "Hello"},
+				{typ: typeEOF},
+			})
+
+		lex(
+			t,
+			"group multiple",
+			`Assign
+	Group Hello, World`,
+			lexemes{
+				{typ: typeAssignment},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typ: typeGroup},
+				{typeValue, "Hello"},
+				{typeValue, "World"},
+				{typ: typeEOF},
+			})
+
+		lex(
+			t,
+			"group valid then not",
+			`Assign
+	Group Hello, ?`,
+			lexemes{
+				{typ: typeAssignment},
+				{typeEOL, "\n"},
+				{typeSpace, "\t"},
+				{typ: typeGroup},
+				{typeValue, "Hello"},
+				{typeError, "Invalid assignment group ID on line 2 position 2"},
+			})
+	})
 }

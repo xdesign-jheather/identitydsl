@@ -124,3 +124,12 @@ func (l *lexer) errorf(format string, args ...interface{}) stateFunc {
 	})
 	return nil
 }
+
+func (l *lexer) peekAnyOf(runes ...rune) bool {
+	for i := range runes {
+		if l.peek() == runes[i] {
+			return true
+		}
+	}
+	return false
+}
